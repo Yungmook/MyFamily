@@ -1,0 +1,40 @@
+# AI 관련주 후보 유니버스 (자동매매 리서치, 기준일 2026-08-06)
+# 사용: python scripts/research_screener.py --file data/ai_candidates.txt --years 3
+#
+# --- 반도체/칩 ---
+NVDA
+AMD
+AVGO
+MRVL
+MU
+INTC
+TSM
+ASML
+ALAB
+ADI
+QCOM
+ARM
+# --- AI 소프트웨어/데이터 ---
+PLTR
+SNOW
+MDB
+DDOG
+CRWD
+NOW
+GTLB
+ADBE
+# --- 하이퍼스케일러/클라우드 ---
+MSFT
+GOOGL
+META
+AMZN
+ORCL
+CRWV
+# --- 데이터센터 인프라(전력·냉각·네트워킹·하드웨어·전력공급) ---
+VRT
+ANET
+CLS
+SMCI
+DELL
+CEG
+VST
