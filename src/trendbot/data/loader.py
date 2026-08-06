@@ -1,8 +1,9 @@
-"""OHLCV 데이터 로더.
+"""OHLCV 데이터 로더 (주식).
 
 두 가지 소스를 지원한다.
-  - ``csv``   : 로컬 CSV 파일 (오프라인/재현 가능한 백테스트에 적합)
-  - ``upbit`` : 업비트 공개 시세 API (무료, 인증 불필요) — 페이퍼트레이딩용
+  - ``csv`` : 로컬 CSV 파일 (오프라인/재현 가능한 백테스트에 적합)
+  - ``fdr`` : FinanceDataReader — 국내(KRX)·해외 주가를 무료·인증 없이 조회
+              (예: 삼성전자 "005930", 애플 "AAPL")
 
 반환 형식은 항상 다음 컬럼을 가진 :class:`pandas.DataFrame` 이다:
     index: datetime (오름차순)
@@ -17,7 +18,7 @@ REQUIRED_COLS = ["open", "high", "low", "close", "volume"]
 
 def _normalize(df: pd.DataFrame) -> pd.DataFrame:
     """컬럼명을 소문자로 통일하고 필수 컬럼/정렬을 보장한다."""
-    df = df.rename(columns={c: c.lower() for c in df.columns})
+    df = df.rename(columns={c: str(c).lower() for c in df.columns})
     missing = [c for c in REQUIRED_COLS if c not in df.columns]
     if missing:
         raise ValueError(f"OHLCV 데이터에 필수 컬럼이 없습니다: {missing}")
@@ -40,41 +41,19 @@ def load_csv(path: str) -> pd.DataFrame:
     return _normalize(df)
 
 
-def load_upbit(symbol: str = "KRW-BTC", interval: str = "day", count: int = 200) -> pd.DataFrame:
-    """업비트 공개 시세 API 에서 최근 캔들을 가져온다 (인증 불필요).
+def load_fdr(symbol: str, start: str | None = None, end: str | None = None) -> pd.DataFrame:
+    """FinanceDataReader 로 주가(OHLCV)를 조회한다 (인증 불필요).
 
-    interval: "day", "minute1", "minute60" 등.
+    symbol 예시:
+      - 국내: "005930"(삼성전자), "000660"(SK하이닉스), "035720"(카카오)
+      - 지수: "KS11"(코스피), "KQ11"(코스닥)
+      - 해외: "AAPL", "MSFT", "TSLA"
     네트워크가 필요하며, 실패 시 예외를 던진다.
     """
-    import requests  # 지연 임포트: CSV 전용 사용 시 requests 불필요
+    import FinanceDataReader as fdr  # 지연 임포트: CSV 전용 사용 시 불필요
 
-    if interval == "day":
-        url = "https://api.upbit.com/v1/candles/days"
-        params = {"market": symbol, "count": count}
-    elif interval.startswith("minute"):
-        unit = interval.replace("minute", "") or "1"
-        url = f"https://api.upbit.com/v1/candles/minutes/{unit}"
-        params = {"market": symbol, "count": count}
-    else:
-        raise ValueError(f"지원하지 않는 interval: {interval!r}")
-
-    resp = requests.get(url, params=params, timeout=10)
-    resp.raise_for_status()
-    rows = resp.json()
-
-    df = pd.DataFrame(rows)
-    df = df.rename(
-        columns={
-            "candle_date_time_kst": "datetime",
-            "opening_price": "open",
-            "high_price": "high",
-            "low_price": "low",
-            "trade_price": "close",
-            "candle_acc_trade_volume": "volume",
-        }
-    )
-    df["datetime"] = pd.to_datetime(df["datetime"])
-    df = df.set_index("datetime")
+    df = fdr.DataReader(symbol, start, end)
+    # FinanceDataReader 컬럼: Open/High/Low/Close/Volume (+ Change/Adj Close 등)
     return _normalize(df)
 
 
@@ -83,9 +62,10 @@ def load_ohlcv(market_cfg: dict) -> pd.DataFrame:
     source = market_cfg.get("source", "csv")
     if source == "csv":
         return load_csv(market_cfg["csv_path"])
-    if source == "upbit":
-        return load_upbit(
-            symbol=market_cfg.get("symbol", "KRW-BTC"),
-            interval=market_cfg.get("interval", "day"),
+    if source == "fdr":
+        return load_fdr(
+            symbol=market_cfg["symbol"],
+            start=market_cfg.get("start"),
+            end=market_cfg.get("end"),
         )
-    raise ValueError(f"지원하지 않는 데이터 소스: {source!r} (csv/upbit)")
+    raise ValueError(f"지원하지 않는 데이터 소스: {source!r} (csv/fdr)")

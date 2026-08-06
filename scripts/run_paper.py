@@ -26,9 +26,9 @@ def main() -> None:
     args = parser.parse_args()
 
     cfg = load_config(args.config)
-    # 페이퍼트레이딩은 실시간 시세가 필요하므로 upbit 소스를 권장
+    # 페이퍼트레이딩은 최신 시세가 필요하므로 fdr 소스를 권장
     if cfg["market"].get("source") == "csv":
-        logging.warning("페이퍼트레이딩에는 실시간 데이터가 필요합니다. config 의 market.source 를 'upbit' 로 바꾸세요.")
+        logging.warning("페이퍼트레이딩에는 최신 시세가 필요합니다. config 의 market.source 를 'fdr' 로 바꾸세요.")
 
     logging.basicConfig(
         level=getattr(logging, cfg["run"].get("log_level", "INFO")),

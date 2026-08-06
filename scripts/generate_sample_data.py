@@ -1,8 +1,8 @@
-"""데모용 샘플 OHLCV 데이터를 생성한다.
+"""데모용 샘플 주가 OHLCV 데이터를 생성한다.
 
 상승/하락 추세가 번갈아 나타나는 합성 시계열을 만들어
 추세매매 전략을 오프라인에서 재현 가능하게 검증할 수 있도록 한다.
-(시드 고정 → 항상 같은 데이터 생성)
+(시드 고정 → 항상 같은 데이터 생성. 실제 종목이 아닌 가상 주가)
 """
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 
-def generate(n: int = 500, seed: int = 42, start_price: float = 50_000_000.0) -> pd.DataFrame:
+def generate(n: int = 500, seed: int = 42, start_price: float = 70_000.0) -> pd.DataFrame:
     rng = np.random.default_rng(seed)
     dates = pd.date_range("2023-01-01", periods=n, freq="D")
 
@@ -41,11 +41,11 @@ def generate(n: int = 500, seed: int = 42, start_price: float = 50_000_000.0) ->
     return pd.DataFrame(
         {
             "date": dates,
-            "open": opens,
-            "high": np.maximum.reduce([opens, highs, closes]),
-            "low": np.minimum.reduce([opens, lows, closes]),
-            "close": closes,
-            "volume": volume,
+            "open": opens.round(0),
+            "high": np.maximum.reduce([opens, highs, closes]).round(0),
+            "low": np.minimum.reduce([opens, lows, closes]).round(0),
+            "close": closes.round(0),
+            "volume": volume.round(0),
         }
     )
 

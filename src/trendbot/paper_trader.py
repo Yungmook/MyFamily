@@ -1,9 +1,13 @@
 """페이퍼트레이딩(실시간 가상매매) 루프.
 
-실시간 시세를 주기적으로 조회해 최신 봉의 신호를 확인하고,
+주가 데이터를 주기적으로 조회해 최신 봉의 신호를 확인하고,
 :class:`PaperBroker` 로 가상 주문을 낸다. **실거래가 아니므로 실제 자금
 이동은 전혀 없다.** 실거래로 확장하려면 ``broker`` 자리에 실제 브로커
-구현체를 넣기만 하면 된다.
+(예: :class:`~trendbot.broker.kis_live.KISLiveBroker`)를 넣기만 하면 된다.
+
+참고: FinanceDataReader 는 일봉 기준이라 장중 실시간 체결이 아니라
+'최신 확정 봉'으로 판단한다. 분 단위 실시간 매매가 필요하면 KIS 실시간
+시세(WebSocket) 연동이 필요하다.
 """
 from __future__ import annotations
 

@@ -1,3 +1,3 @@
-from .loader import load_csv, load_ohlcv, load_upbit
+from .loader import load_csv, load_fdr, load_ohlcv
 
-__all__ = ["load_csv", "load_ohlcv", "load_upbit"]
+__all__ = ["load_csv", "load_fdr", "load_ohlcv"]
