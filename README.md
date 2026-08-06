@@ -52,6 +52,19 @@ python scripts/run_backtest.py --config config.yaml
 python scripts/run_backtest.py --trades
 ```
 
+### 결과를 차트로 보기 (HTML 리포트)
+
+터미널 표 대신 **자산곡선·매매시점·거래내역**을 시각적으로 보려면:
+
+```bash
+python scripts/report.py                    # results/report.html 생성
+# 생성된 results/report.html 을 브라우저로 열기
+```
+
+리포트에는 성과지표 카드, 자산곡선(Equity Curve), 주가+이평선 위에
+매수(▲)·매도(▼) 시점, 전체 거래내역 표가 담깁니다. 외부 라이브러리
+없이 자체완결 HTML 이라 브라우저에서 바로 열립니다.
+
 출력 예시(샘플 데이터 기준):
 
 ```
