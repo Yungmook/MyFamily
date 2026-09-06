@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.morningbrief.fetch-market</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>__HOME__/morning_brief/run_fetch_market.sh</string>
+    </array>
+
+    <!-- 매일 06:10 -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>6</integer>
+        <key>Minute</key>
+        <integer>10</integer>
+    </dict>
+
+    <key>WorkingDirectory</key>
+    <string>__HOME__/morning_brief</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+        <key>LANG</key>
+        <string>ko_KR.UTF-8</string>
+    </dict>
+
+    <!-- 래퍼 자체가 죽었을 때를 위한 부트스트랩 로그. 실제 실행 로그는 logs/fetch_market_YYYY-MM-DD.log -->
+    <key>StandardOutPath</key>
+    <string>__HOME__/morning_brief/logs/launchd.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>__HOME__/morning_brief/logs/launchd.err.log</string>
+
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>
